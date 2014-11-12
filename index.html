@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Blackjack</title>
+	<style type="text/css">
+		#player1buttons {
+
+		}
+
+		.cardsarea {
+			width: 750px;
+			height: 160px;
+			background-color: #090;
+			border: 2px solid #000;
+		}
+
+		.cardsarea img {
+			padding: 15px;
+		}
+
+		.score {
+			color: #FFF;
+			font-size: 60px;
+			padding: 15px;
+		}
+	</style>
+</head>
+<body>
+
+<div id="player1">
+	<h1>Player 1 
+		<span id="player1buttons">
+			<button id="hit1" onclick="getHit()">hit</button>
+			<button id="stick1" onclick="changeTurn()">stick</button>
+		</span>
+	</h1>
+
+	<div class="cardsarea">
+		<span id="cards1">
+			<!-- Cards will show up here as img -->
+		</span>
+		<span id="score1" class="score"></span>
+	</div>
+</div><!-- Player 1 end -->
+
+<div id="player2">
+	<h1>Player 2 
+		<span id="player2buttons" style="display: none;">
+			<button id="hit2" onclick="getHit()">hit</button>
+			<button id="stick2" onclick="changeTurn()">stick</button>
+		</span>
+	</h1>
+
+	<div class="cardsarea">
+		<span id="cards2">
+			<!-- Cards will show up here as img -->
+		</span>
+		<span id="score2" class="score"></span>
+	</div>
+</div><!-- Player 2 end -->
+
+<p><button id="reset" onclick="reset()">reset</button></p>
+
+<script type="text/javascript">
+	// Variables holding scores for players 1 and 2, as well as turn, respectively
+	var score1 = 0, score2 = 0, turn = 1;
+
+	function getHit() { // Dynamically receive a 'hit' based on which button was pressed
+		var currentPlayer = 'Player' + event.currentTarget.id.slice(-1);
+		var cardsArea = document.getElementById('cards' + currentPlayer.slice(-1));
+		var score = document.getElementById('score' + currentPlayer.slice(-1));
+		var card = getCard(Math.floor((Math.random() * 52) + 1));
+
+		currentPlayer == 'Player1' ? score.innerHTML = score1 : score.innerHTML = score2;
+		cardsArea.innerHTML += '<img src="img/' + card + '">';
+
+		// Check if over 21
+		if(currentPlayer == 'Player1') {
+			if(score1 > 21) {
+				score.innerHTML += ' Bust!';
+				document.getElementById('score2').innerHTML += ' Winner!';
+				document.getElementById('hit1').style.display = 'none';
+				document.getElementById('stick1').style.display = 'none';
+			}
+			else if(score1 == 21) {
+				score.innerHTML += ' Winner!';
+				document.getElementById('hit1').style.display = 'none';
+				document.getElementById('stick1').style.display = 'none';
+			}
+			else {
+				// Change turns
+				changeTurn();
+			}
+		}else {
+			if(score2 > 21) {
+				score.innerHTML += ' Bust!';
+				document.getElementById('score1').innerHTML += ' Winner!';
+				document.getElementById('hit2').style.display = 'none';
+				document.getElementById('stick2').style.display = 'none';
+			}
+			else if(score2 == 21) {
+				score.innerHTML += ' Winner!';
+				document.getElementById('hit2').style.display = 'none';
+				document.getElementById('stick2').style.display = 'none';
+			}
+			else {
+				// Change turns
+				changeTurn();
+			}
+		}
+	}
+
+	function getCard(rand) {
+		var card = "";
+		var value = 0;
+
+		if(rand < 37) {
+			// Determine value
+			value = Math.ceil(rand / 4) + 1;
+			card += value;
+		}
+		else {
+			switch(Math.ceil(rand / 4)) {
+				case 10:
+					card += 'Ace';
+					if(event.currentTarget.id == 'hit1')
+						score1 > 10 ? value = 1 : value = 11;
+					else
+						score2 > 10 ? value = 1 : value = 11;
+					break;
+				case 11:
+					card += 'Jack';
+					value = 10;
+					break;
+				case 12:
+					card += 'King';
+					value = 10;
+					break;
+				case 13:
+					card += 'Queen';
+					value = 10;
+					break;
+			}
+		}
+		// Determine suit
+		rand %= 4;
+		switch(rand) {
+			case 1:
+				card += 'Clubs.png';
+				break;
+			case 2:
+				card += 'Diamonds.png';
+				break;
+			case 3:
+				card += 'Hearts.png';
+				break;
+			case 0:
+				card += 'Spades.png';
+				break;
+		}
+
+		// Check which score to update
+		event.currentTarget.id == 'hit1' ? score1 += value : score2 += value;
+		return card;
+	}
+
+	function changeTurn() {
+		if(turn == 1) {
+			turn = 2;
+			document.getElementById('player1buttons').style.display = 'none';
+			document.getElementById('player2buttons').style.display = 'inline';
+		} else {
+			turn = 1;
+			document.getElementById('player2buttons').style.display = 'none';
+			document.getElementById('player1buttons').style.display = 'inline';
+		}
+	}
+
+	function reset() {
+		score1 = 0;
+		score2 = 0;
+		turn = 1;
+		document.getElementById('player2buttons').style.display = 'none';
+		document.getElementById('player1buttons').style.display = 'inline';
+		document.getElementById('hit1').style.display = 'inline';
+		document.getElementById('stick1').style.display = 'inline';
+		document.getElementById('hit2').style.display = 'inline';
+		document.getElementById('stick2').style.display = 'inline';
+		document.getElementById('cards1').innerHTML = '';
+		document.getElementById('cards2').innerHTML = '';
+		document.getElementById('score1').innerHTML = '';
+		document.getElementById('score2').innerHTML = '';
+	}
+</script>
+</body>
+</html>
